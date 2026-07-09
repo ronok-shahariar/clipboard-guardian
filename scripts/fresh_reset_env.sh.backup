@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "===================================="
+echo " Clipboard Guardian Fresh Reset"
+echo "===================================="
+
+
+echo
+echo "Stopping running processes..."
+
+pkill -f clipboard-guardian || true
+pkill -f clipboard-checker || true
+
+
+echo
+echo "Removing installed package..."
+
+if dpkg -l | grep -q clipboard-guardian
+then
+    sudo apt remove --purge -y clipboard-guardian
+else
+    echo "Package not installed"
+fi
+
+
+echo
+echo "Removing leftover system files..."
+
+sudo rm -f /usr/bin/clipboard-guardian
+
+sudo rm -f \
+/usr/share/applications/clipboard-guardian.desktop \
+/etc/xdg/autostart/clipboard-guardian.desktop
+
+
+echo
+echo "Removing user desktop entries..."
+
+rm -f ~/.local/share/applications/clipboard-guardian.desktop
+
+
+echo
+echo "Refreshing icon database..."
+
+sudo gtk-update-icon-cache \
+/usr/share/icons/hicolor \
+>/dev/null 2>&1 || true
+
+
+echo
+echo "Cleaning project cache..."
+
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+find "$ROOT_DIR/src" \
+-type d \
+-name "__pycache__" \
+-exec rm -rf {} +
+
+find "$ROOT_DIR/src" \
+-type f \
+-name "*.pyc" \
+-delete
+
+
+echo
+echo "Verification..."
+
+echo "--- packages ---"
+dpkg -l | grep -Ei "clipboard|guardian" || echo "OK"
+
+echo
+echo "--- processes ---"
+ps aux | grep -Ei "clipboard|guardian" | grep -v grep || echo "OK"
+
+echo
+echo "--- desktop files ---"
+find ~/.local/share/applications \
+/usr/share/applications \
+/etc/xdg/autostart \
+-type f \
+| grep -Ei "clipboard|guardian" || echo "OK"
+
+
+echo
+echo "===================================="
+echo " Fresh reset completed"
+echo "===================================="

@@ -26,6 +26,37 @@ except Exception:
 SOCKET_PATH = os.environ.get("CLIPBOARD_GUARDIAN_TRAY_SOCKET")
 
 
+def get_icon_path():
+    """
+    Resolve tray icon location.
+
+    Development:
+        use project assets.
+
+    Production:
+        fallback to installed icon theme.
+    """
+
+    project_root = os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            "../../"
+        )
+    )
+
+    dev_icon = os.path.join(
+        project_root,
+        "assets",
+        "icons",
+        "clipboard-guardian-green.png",
+    )
+
+    if os.path.exists(dev_icon):
+        return dev_icon
+
+    return "clipboard-guardian"
+
+
 def send_command(command: str):
     if not SOCKET_PATH:
         return
@@ -50,7 +81,7 @@ class ClipboardGuardianTray:
 
         self.indicator = AppIndicator3.Indicator.new(
             "clipboard-guardian",
-            "clipboard-guardian",
+            get_icon_path(),
             AppIndicator3.IndicatorCategory.APPLICATION_STATUS,
         )
         self.indicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
