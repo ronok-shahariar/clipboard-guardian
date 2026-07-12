@@ -7,6 +7,7 @@ from pathlib import Path
 from gi.repository import GLib
 
 from src.events.clipboard_events import ClipboardChangedEvent
+from src.core.paths import ICON_PATH
 
 
 class NotificationService:
@@ -65,7 +66,7 @@ class NotificationService:
             subprocess.Popen([
                 "notify-send",
                 "-i",
-                str(Path("assets/icons/clipboard-guardian-green.png").resolve()),
+                str(ICON_PATH),
                 "Clipboard Guardian",
                 "🔴🔴🔴 " + preview + " 🔴🔴🔴",
             ])

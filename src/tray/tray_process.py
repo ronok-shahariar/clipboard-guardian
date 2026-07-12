@@ -10,6 +10,7 @@ from gi.repository import Gtk
 from gi.repository import GLib
 
 from src.managers.config_manager import ConfigManager
+from src.core.paths import ICON_PATH
 
 APPINDICATOR_AVAILABLE = False
 AppIndicator3 = None
@@ -40,29 +41,11 @@ def get_icon_path():
     """
     Resolve tray icon location.
 
-    Development:
-        use project assets.
-
-    Production:
-        fallback to installed icon theme.
+    Uses centralized production-safe path.
     """
 
-    project_root = os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            "../../"
-        )
-    )
-
-    dev_icon = os.path.join(
-        project_root,
-        "assets",
-        "icons",
-        "clipboard-guardian-green.png",
-    )
-
-    if os.path.exists(dev_icon):
-        return dev_icon
+    if ICON_PATH.exists():
+        return str(ICON_PATH)
 
     return "clipboard-guardian"
 
