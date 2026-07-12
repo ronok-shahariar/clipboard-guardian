@@ -12,6 +12,7 @@ from pathlib import Path
 
 
 DEFAULT_CONFIG = {
+    "config_version": 1,
     "history_limit": 20,
     "toast_duration": 5,
     "popup_enabled": True,
@@ -57,6 +58,8 @@ class ConfigManager:
                 self.config_file.read_text()
             )
 
+            self.migrate()
+
         except Exception:
             self.data = DEFAULT_CONFIG.copy()
             self.save()
@@ -66,6 +69,26 @@ class ConfigManager:
     def save(self):
 
         self.config_file.write_text(json.dumps(self.data, indent=4))
+
+
+    # ---------------------------------------------
+
+    def migrate(self):
+
+        if "config_version" not in self.data:
+
+            self.data["config_version"] = 1
+
+
+        if "defaults" not in self.data:
+
+            self.data["defaults"] = (
+                DEFAULT_CONFIG["defaults"].copy()
+            )
+
+
+        self.save()
+
 
     # ---------------------------------------------
 

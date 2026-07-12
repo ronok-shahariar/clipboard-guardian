@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import os
 import socket
+import threading
 import gi
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
+from gi.repository import GLib
 
 from src.managers.config_manager import ConfigManager
 
@@ -25,7 +27,13 @@ except Exception:
         APPINDICATOR_AVAILABLE = False
 
 
-SOCKET_PATH = os.environ.get("CLIPBOARD_GUARDIAN_TRAY_SOCKET")
+SOCKET_PATH = os.environ.get(
+    "CLIPBOARD_GUARDIAN_TRAY_SOCKET"
+)
+
+RELOAD_SOCKET_PATH = os.environ.get(
+    "CLIPBOARD_GUARDIAN_RELOAD_SOCKET"
+)
 
 
 def get_icon_path():
@@ -191,13 +199,96 @@ class ClipboardGuardianTray:
             self.toast_item.set_label("Toast: OFF")
             send_command("toast_off")
 
+
+    def reload_config(self):
+
+        self.config.load()
+
+        self.monitoring = self.config.get_default(
+            "monitoring",
+            True
+        )
+
+        self.notify_me = self.config.get_default(
+            "notifications",
+            True
+        )
+
+        self.toast = self.config.get_default(
+            "toast",
+            True
+        )
+
+
+        self.monitor_item.set_label(
+            f"Monitoring: {'ON' if self.monitoring else 'OFF'}"
+        )
+
+        self.notify_item.set_label(
+            f"Notify Me: {'ON' if self.notify_me else 'OFF'}"
+        )
+
+        self.toast_item.set_label(
+            f"Toast: {'ON' if self.toast else 'OFF'}"
+        )
+
+
     def quit_app(self, *_args):
         send_command("quit")
         Gtk.main_quit()
 
 
 def main():
-    ClipboardGuardianTray()
+
+    tray = ClipboardGuardianTray()
+
+
+    def listener():
+
+        if not RELOAD_SOCKET_PATH:
+            return
+
+
+        if os.path.exists(RELOAD_SOCKET_PATH):
+            os.remove(RELOAD_SOCKET_PATH)
+
+
+        server = socket.socket(
+            socket.AF_UNIX,
+            socket.SOCK_STREAM,
+        )
+
+        server.bind(
+            RELOAD_SOCKET_PATH
+        )
+
+        server.listen(5)
+
+
+        while True:
+
+            conn, _ = server.accept()
+
+            with conn:
+
+                cmd = conn.recv(
+                    1024
+                ).decode()
+
+
+                if cmd == "reload_config":
+
+                    GLib.idle_add(
+                        tray.reload_config
+                    )
+
+
+    threading.Thread(
+        target=listener,
+        daemon=True,
+    ).start()
+
+
     Gtk.main()
 
 

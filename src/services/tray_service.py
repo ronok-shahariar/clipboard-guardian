@@ -28,6 +28,11 @@ class TrayService:
             tempfile.gettempdir(),
             f"clipboard_guardian_tray_{os.getuid()}.sock",
         )
+
+        self.reload_socket_path = os.path.join(
+            tempfile.gettempdir(),
+            f"clipboard_guardian_reload_{os.getuid()}.sock",
+        )
         self.server = None
         self.running = False
 
@@ -103,6 +108,10 @@ class TrayService:
         env = os.environ.copy()
         env["CLIPBOARD_GUARDIAN_TRAY_SOCKET"] = self.socket_path
 
+        env["CLIPBOARD_GUARDIAN_RELOAD_SOCKET"] = (
+            self.reload_socket_path
+        )
+
         self.process = subprocess.Popen(
             [sys.executable, "-m", "src.tray.tray_process"],
             env=env,
@@ -118,6 +127,29 @@ class TrayService:
                         GLib.idle_add(self.handle_command, command)
             except Exception:
                 break
+
+
+    def send_reload_command(self):
+
+        try:
+
+            with socket.socket(
+                socket.AF_UNIX,
+                socket.SOCK_STREAM,
+            ) as client:
+
+                client.connect(
+                    self.reload_socket_path
+                )
+
+                client.sendall(
+                    b"reload_config"
+                )
+
+        except Exception:
+
+            pass
+
 
     def handle_command(self, command: str):
         if command == "show_window":
@@ -171,6 +203,11 @@ class TrayService:
         elif command == "clear_history":
             if self.window and hasattr(self.window, "clear_history"):
                 self.window.clear_history()
+
+
+        elif command == "reload_tray":
+
+            self.send_reload_command()
 
 
         elif command == "open_settings":

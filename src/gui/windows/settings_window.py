@@ -19,6 +19,14 @@ class SettingsWindow(Gtk.Window):
 
         self.application = application
 
+        self.event_bus = None
+
+        if self.application:
+
+            self.event_bus = (
+                self.application.guardian.event_bus
+            )
+
         self.set_default_size(
             350,
             300
@@ -96,11 +104,22 @@ class SettingsWindow(Gtk.Window):
         )
 
 
+        reset = Gtk.Button(
+            label="Reset Defaults"
+        )
+
+        reset.connect(
+            "clicked",
+            self.reset_defaults
+        )
+
+
         box.append(self.monitor_check)
         box.append(self.notify_check)
         box.append(self.toast_check)
         box.append(self.hidden_check)
         box.append(save)
+        box.append(reset)
 
 
         self.set_child(box)
@@ -132,4 +151,55 @@ class SettingsWindow(Gtk.Window):
 
         self.config.save()
 
+
+        # Apply immediately without restart
+
+        if self.event_bus:
+
+            self.event_bus.monitoring_enabled = (
+                self.monitor_check.get_active()
+            )
+
+            self.event_bus.notify_enabled = (
+                self.notify_check.get_active()
+            )
+
+            self.event_bus.toast_enabled = (
+                self.toast_check.get_active()
+            )
+
+
+        # Refresh tray indicator immediately
+
+        if self.application:
+
+            tray = (
+                self.application
+                .guardian
+                .service_manager
+                .get("TrayService")
+            )
+
+            if tray:
+
+                tray.handle_command(
+                    "reload_tray"
+                )
+
+
         self.close()
+
+
+
+    def reset_defaults(self, *_):
+
+        self.monitor_check.set_active(True)
+
+        self.notify_check.set_active(True)
+
+        self.toast_check.set_active(True)
+
+        self.hidden_check.set_active(False)
+
+
+        self.save_settings()
