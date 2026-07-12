@@ -7,6 +7,8 @@ Wants=graphical-session.target
 [Service]
 Type=simple
 
+ExecStartPre=/bin/sleep 5
+
 ExecStart=/usr/bin/clipboard-guardian --hidden
 
 Restart=on-failure

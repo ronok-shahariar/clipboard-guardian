@@ -13,20 +13,6 @@ systemctl --user disable clipboard-guardian.service \
 >/dev/null 2>&1 || true
 
 
-pkill -f "src.main" || true
-
-pkill -f "src.tray.tray_process" || true
-
-pkill -f "/usr/share/clipboard-guardian/src/main.py" || true
-
-
-rm -f /tmp/clipboard_guardian*.sock || true
-
-rm -f /tmp/clipboard_guardian_tray.lock || true
-
-rm -rf /tmp/clipboard_guardian* || true
-
-
 systemctl --user daemon-reload \
 >/dev/null 2>&1 || true
 
