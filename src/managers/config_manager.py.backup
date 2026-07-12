@@ -18,13 +18,6 @@ DEFAULT_CONFIG = {
     "poll_interval": 300,
     "run_at_startup": True,
     "theme": "system",
-
-    "defaults": {
-        "monitoring": True,
-        "notifications": True,
-        "toast": True,
-        "start_hidden": False,
-    },
 }
 
 
@@ -52,14 +45,7 @@ class ConfigManager:
 
             return
 
-        try:
-            self.data = json.loads(
-                self.config_file.read_text()
-            )
-
-        except Exception:
-            self.data = DEFAULT_CONFIG.copy()
-            self.save()
+        self.data = json.loads(self.config_file.read_text())
 
     # ---------------------------------------------
 
@@ -78,27 +64,3 @@ class ConfigManager:
     def set(self, key, value):
 
         self.data[key] = value
-
-
-    # ---------------------------------------------
-
-    def get_default(self, key, default=None):
-
-        return self.data.get(
-            "defaults",
-            {}
-        ).get(
-            key,
-            default
-        )
-
-
-    # ---------------------------------------------
-
-    def set_default(self, key, value):
-
-        if "defaults" not in self.data:
-            self.data["defaults"] = {}
-
-        self.data["defaults"][key] = value
-

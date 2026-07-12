@@ -32,34 +32,10 @@ class TrayService:
         self.window = window
 
     def initialize(self):
-
-        from src.managers.config_manager import ConfigManager
-
-        config = ConfigManager()
-        config.load()
-
         if self.event_bus is not None:
-
-            self.event_bus.monitoring_enabled = (
-                config.get_default(
-                    "monitoring",
-                    True
-                )
-            )
-
-            self.event_bus.notify_enabled = (
-                config.get_default(
-                    "notifications",
-                    True
-                )
-            )
-
-            self.event_bus.toast_enabled = (
-                config.get_default(
-                    "toast",
-                    True
-                )
-            )
+            self.event_bus.monitoring_enabled = True
+            self.event_bus.notify_enabled = True
+            self.event_bus.toast_enabled = True
 
     def start(self):
         self.running = True
