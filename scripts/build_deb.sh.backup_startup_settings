@@ -95,7 +95,7 @@ cat > "$BUILD_DIR/etc/xdg/autostart/${APP_ID}.desktop" <<EOF2
 Type=Application
 Name=${APP_NAME}
 Comment=Start Clipboard Guardian automatically
-Exec=${APP_ID}
+Exec=${APP_ID} --hidden
 Icon=${APP_ID}
 Terminal=false
 X-GNOME-Autostart-enabled=true

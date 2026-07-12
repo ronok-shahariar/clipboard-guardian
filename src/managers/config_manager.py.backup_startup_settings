@@ -95,15 +95,6 @@ class ConfigManager:
 
     # ---------------------------------------------
 
-
-    def get_start_hidden(self):
-
-        return self.get_default(
-            "start_hidden",
-            False
-        )
-
-
     def set_default(self, key, value):
 
         if "defaults" not in self.data:

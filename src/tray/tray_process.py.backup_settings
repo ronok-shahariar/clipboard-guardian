@@ -104,13 +104,6 @@ class ClipboardGuardianTray:
         self.toast_item.connect("activate", self.toggle_toast)
         self.menu.append(self.toast_item)
 
-        settings_item = Gtk.MenuItem(label="Settings")
-        settings_item.connect(
-            "activate",
-            lambda *_: send_command("open_settings")
-        )
-        self.menu.append(settings_item)
-
         refresh_item = Gtk.MenuItem(label="Refresh Window")
         refresh_item.connect("activate", lambda *_: send_command("refresh"))
         self.menu.append(refresh_item)

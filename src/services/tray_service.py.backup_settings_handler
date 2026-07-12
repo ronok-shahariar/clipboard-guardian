@@ -159,20 +159,6 @@ class TrayService:
             if self.window and hasattr(self.window, "clear_history"):
                 self.window.clear_history()
 
-
-        elif command == "open_settings":
-
-            from src.gui.windows.settings_window import SettingsWindow
-
-            if self.application:
-
-                settings = SettingsWindow(
-                    self.application,
-                )
-
-                settings.present()
-
-
         elif command == "quit":
             if self.application:
                 self.application.quit()
