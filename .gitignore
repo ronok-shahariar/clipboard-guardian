@@ -5,3 +5,16 @@ dist/
 *.deb
 *.log
 .cache/
+
+# Development backups
+.backups/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Build output
+build/
+dist/
+
