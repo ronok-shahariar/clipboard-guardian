@@ -61,6 +61,9 @@ def load_css():
 
     display = Gdk.Display.get_default()
 
+    if display is None:
+        return
+
     Gtk.StyleContext.add_provider_for_display(
         display,
         provider,

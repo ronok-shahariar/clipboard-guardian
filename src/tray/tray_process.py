@@ -32,6 +32,42 @@ SOCKET_PATH = os.environ.get(
     "CLIPBOARD_GUARDIAN_TRAY_SOCKET"
 )
 
+
+
+# -------------------------------------------------
+# Tray Singleton Protection
+# -------------------------------------------------
+
+TRAY_LOCK_FILE = "/tmp/clipboard_guardian_tray.lock"
+
+
+def acquire_tray_lock():
+
+    import fcntl
+
+    lock = open(
+        TRAY_LOCK_FILE,
+        "w"
+    )
+
+    try:
+        fcntl.flock(
+            lock,
+            fcntl.LOCK_EX | fcntl.LOCK_NB
+        )
+
+        return lock
+
+    except BlockingIOError:
+
+        print(
+            "Clipboard Guardian tray already running."
+        )
+
+        raise SystemExit(0)
+
+
+
 RELOAD_SOCKET_PATH = os.environ.get(
     "CLIPBOARD_GUARDIAN_RELOAD_SOCKET"
 )
@@ -222,6 +258,8 @@ class ClipboardGuardianTray:
 
 
 def main():
+
+    tray_lock = acquire_tray_lock()
 
     tray = ClipboardGuardianTray()
 

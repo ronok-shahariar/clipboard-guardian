@@ -1,0 +1,22 @@
+[Unit]
+Description=Clipboard Guardian
+After=graphical-session.target
+Wants=graphical-session.target
+
+
+[Service]
+Type=simple
+
+ExecStart=/usr/bin/clipboard-guardian --hidden
+
+Restart=on-failure
+RestartSec=3
+
+Environment=GSK_RENDERER=cairo
+Environment=DISPLAY=:0
+Environment=XDG_CURRENT_DESKTOP=ubuntu:GNOME
+Environment=WAYLAND_DISPLAY=wayland-0
+
+
+[Install]
+WantedBy=default.target

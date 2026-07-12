@@ -2,6 +2,13 @@
 
 set -e
 
+echo "Hardening Debian cleanup..."
+
+cat > packaging/debian/prerm <<'EOF'
+#!/bin/bash
+
+set -e
+
 echo "Stopping Clipboard Guardian..."
 
 
@@ -17,7 +24,7 @@ pkill -f "src.main" || true
 
 pkill -f "src.tray.tray_process" || true
 
-pkill -f "/usr/share/clipboard-guardian/src/main.py" || true
+pkill -f "clipboard-guardian" || true
 
 
 rm -f /tmp/clipboard_guardian*.sock || true
@@ -32,3 +39,10 @@ systemctl --user daemon-reload \
 
 
 exit 0
+EOF
+
+
+chmod 755 packaging/debian/prerm
+
+
+echo "Cleanup hardened"

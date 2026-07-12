@@ -8,7 +8,7 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 
-from gi.repository import Gtk
+from gi.repository import Gtk, GLib
 
 from src.core.application import GuardianApplication
 from src.gui.css import load_css
@@ -29,6 +29,13 @@ class GuardianGtkApplication(Gtk.Application):
         self.main_window = None
 
     def do_activate(self):
+
+        GLib.idle_add(
+            self.initialize_app
+        )
+
+
+    def initialize_app(self):
 
         load_css()
 
@@ -63,6 +70,8 @@ class GuardianGtkApplication(Gtk.Application):
             self.main_window.hide()
         else:
             self.main_window.present()
+
+        return False
 
     def do_shutdown(self):
 

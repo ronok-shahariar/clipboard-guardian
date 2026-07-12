@@ -2,8 +2,28 @@
 
 set -e
 
-gtk-update-icon-cache /usr/share/icons/hicolor >/dev/null 2>&1 || true
 
-update-desktop-database >/dev/null 2>&1 || true
+echo "Configuring Clipboard Guardian..."
+
+
+gtk-update-icon-cache \
+/usr/share/icons/hicolor \
+>/dev/null 2>&1 || true
+
+
+update-desktop-database \
+>/dev/null 2>&1 || true
+
+
+systemctl --user daemon-reload \
+>/dev/null 2>&1 || true
+
+
+systemctl --user enable clipboard-guardian.service \
+>/dev/null 2>&1 || true
+
+
+chmod 755 /usr/bin/clipboard-guardian || true
+
 
 exit 0

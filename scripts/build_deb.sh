@@ -25,7 +25,7 @@ mkdir -p \
 "$BUILD_DIR/usr/bin" \
 "$BUILD_DIR/usr/share/${APP_ID}" \
 "$BUILD_DIR/usr/share/applications" \
-"$BUILD_DIR/etc/xdg/autostart" \
+"$BUILD_DIR/usr/lib/systemd/user" \
 "$BUILD_DIR/usr/share/icons/hicolor/128x128/apps"
 
 
@@ -35,6 +35,14 @@ mkdir -p \
 ################################
 
 cp -a "$ROOT_DIR/src" \
+"$BUILD_DIR/usr/share/${APP_ID}/"
+
+
+################################
+# Assets
+################################
+
+cp -a "$ROOT_DIR/assets" \
 "$BUILD_DIR/usr/share/${APP_ID}/"
 
 
@@ -87,22 +95,14 @@ EOF2
 
 
 ################################
-# Autostart
+# Systemd User Service
 ################################
 
-cat > "$BUILD_DIR/etc/xdg/autostart/${APP_ID}.desktop" <<EOF2
-[Desktop Entry]
-Type=Application
-Name=${APP_NAME}
-Comment=Start Clipboard Guardian automatically
-Exec=${APP_ID}
-Icon=${APP_ID}
-Terminal=false
-X-GNOME-Autostart-enabled=true
-StartupNotify=false
-EOF2
+cp "$ROOT_DIR/packaging/systemd/clipboard-guardian.service" \
+"$BUILD_DIR/usr/share/clipboard-guardian/clipboard-guardian.service"
 
-
+cp "$ROOT_DIR/packaging/systemd/clipboard-guardian.service" \
+"$BUILD_DIR/usr/lib/systemd/user/clipboard-guardian.service"
 
 ################################
 # Debian control
@@ -117,6 +117,8 @@ cp "$ROOT_DIR/packaging/debian/control" "$BUILD_DIR/DEBIAN/control"
 cp "$ROOT_DIR/packaging/debian/postinst" "$BUILD_DIR/DEBIAN/postinst" 2>/dev/null || true
 
 cp "$ROOT_DIR/packaging/debian/prerm" "$BUILD_DIR/DEBIAN/prerm" 2>/dev/null || true
+
+cp "$ROOT_DIR/packaging/debian/postrm" "$BUILD_DIR/DEBIAN/postrm" 2>/dev/null || true
 
 chmod 755 "$BUILD_DIR/DEBIAN/"* 2>/dev/null || true
 
