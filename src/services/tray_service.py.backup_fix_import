@@ -9,8 +9,6 @@ import threading
 
 from gi.repository import GLib
 
-from src.managers.config_manager import ConfigManager
-
 
 class TrayService:
     name = "TrayService"
@@ -39,24 +37,29 @@ class TrayService:
 
     def initialize(self):
 
+        from src.managers.config_manager import ConfigManager
+
+        config = ConfigManager()
+        config.load()
+
         if self.event_bus is not None:
 
             self.event_bus.monitoring_enabled = (
-                self.config.get_default(
+                config.get_default(
                     "monitoring",
                     True
                 )
             )
 
             self.event_bus.notify_enabled = (
-                self.config.get_default(
+                config.get_default(
                     "notifications",
                     True
                 )
             )
 
             self.event_bus.toast_enabled = (
-                self.config.get_default(
+                config.get_default(
                     "toast",
                     True
                 )

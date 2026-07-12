@@ -7,8 +7,6 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
-from src.managers.config_manager import ConfigManager
-
 APPINDICATOR_AVAILABLE = False
 AppIndicator3 = None
 
@@ -77,24 +75,9 @@ class ClipboardGuardianTray:
             raise SystemExit(1)
 
         self.window_visible = False
-
-        self.config = ConfigManager()
-        self.config.load()
-
-        self.monitoring = self.config.get_default(
-            "monitoring",
-            True
-        )
-
-        self.notify_me = self.config.get_default(
-            "notifications",
-            True
-        )
-
-        self.toast = self.config.get_default(
-            "toast",
-            True
-        )
+        self.monitoring = True
+        self.notify_me = True
+        self.toast = True
 
         self.indicator = AppIndicator3.Indicator.new(
             "clipboard-guardian",
@@ -109,21 +92,15 @@ class ClipboardGuardianTray:
         self.show_hide_item.connect("activate", self.toggle_window)
         self.menu.append(self.show_hide_item)
 
-        self.monitor_item = Gtk.MenuItem(
-            label=f"Monitoring: {'ON' if self.monitoring else 'OFF'}"
-        )
+        self.monitor_item = Gtk.MenuItem(label="Monitoring: ON")
         self.monitor_item.connect("activate", self.toggle_monitoring)
         self.menu.append(self.monitor_item)
 
-        self.notify_item = Gtk.MenuItem(
-            label=f"Notify Me: {'ON' if self.notify_me else 'OFF'}"
-        )
+        self.notify_item = Gtk.MenuItem(label="Notify Me: ON")
         self.notify_item.connect("activate", self.toggle_notify_me)
         self.menu.append(self.notify_item)
 
-        self.toast_item = Gtk.MenuItem(
-            label=f"Toast: {'ON' if self.toast else 'OFF'}"
-        )
+        self.toast_item = Gtk.MenuItem(label="Toast: ON")
         self.toast_item.connect("activate", self.toggle_toast)
         self.menu.append(self.toast_item)
 
